@@ -17,7 +17,7 @@ class Env2048(gym.Env):
         self.n_tiles = self.height * self.width
 
         self.action_space = spaces.Discrete(4)
-        self.observation_space = spaces.Box(0, 2 ** self.n_tiles, shape=(self.height, self.width), dtype=np.uint32)
+        self.observation_space = spaces.Box(0, 2 ** self.n_tiles, shape=(self.height, self.width), dtype=np.int)
 
         self.reset()
 
@@ -46,7 +46,7 @@ class Env2048(gym.Env):
 
     def reset(self):
         # Reset the state of the environment to an initial state
-        self.grid = np.zeros(shape=(4, 4), dtype=np.uint32)
+        self.grid = np.zeros(shape=(4, 4), dtype=np.int)
 
         self.grid = self.generate_tile(self.grid)
         self.grid = self.generate_tile(self.grid)
@@ -55,6 +55,9 @@ class Env2048(gym.Env):
     def render(self, mode='human'):
         # Render the environment to the screen
         print(self.grid)
+
+    def get_valid_moves(self):
+        return [move for move in range(4) if self.is_movable(move)]
 
     def generate_tile(self, grid):
         next_grid = grid.copy()
