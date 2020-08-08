@@ -1,0 +1,12 @@
+name: 2048
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - numpy
+  - jupyterlab
+  - pip
+  - pip:
+      - gym
+      - stable-baselines3

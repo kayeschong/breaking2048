@@ -161,7 +161,7 @@ if __name__ == '__main__':
         print(game)
 
 
-    frame = Frame(main, width=200, height=200)
+    # frame = Frame(main, width=200, height=200)
     main.bind('<Left>', leftKey)
     main.bind('<Right>', rightKey)
     main.bind('<Up>', upKey)
