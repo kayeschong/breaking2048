@@ -1,12 +1,60 @@
 import numpy as np
+import gym
+from gym import spaces
 
 
-class Game2048:
-    def __init__(self):
-        self.grid = np.zeros(shape=(4, 4), dtype=int)
+class Env2048(gym.Env):
+    LEFT = 0
+    UP = 1
+    RIGHT = 2
+    DOWN = 3
+
+    def __init__(self, height=4, width=4):
+        super().__init__()
+
+        self.height = height
+        self.width = width
+        self.n_tiles = self.height * self.width
+
+        self.action_space = spaces.Discrete(4)
+        self.observation_space = spaces.Box(0, 2 ** self.n_tiles, shape=(self.height, self.width), dtype=np.uint32)
+
+        self.reset()
+
+    def step(self, action):
+        # Execute one time step within the environment
+        """
+        0 = left
+        1 = up
+        2 = right
+        3 = down
+        """
+        assert action in self.action_space, f"Invalid action {action} | {self.action_space}"
+        self.grid, moved = self._move(self.grid, action)
+
+        obs = self.grid.copy()
+        if moved:
+            reward = 100
+        else:
+            reward = -1
+        done = self._game_lost(self.grid)
+        info = {
+            "has_moved": moved,
+            "last_action": action,
+        }
+        return obs, reward, done, info
+
+    def reset(self):
+        # Reset the state of the environment to an initial state
+        self.grid = np.zeros(shape=(4, 4), dtype=np.uint32)
 
         self.grid = self.generate_tile(self.grid)
         self.grid = self.generate_tile(self.grid)
+        return self.grid.copy()
+
+    def render(self, mode='human'):
+        # Render the environment to the screen
+        print(self.grid)
 
     def generate_tile(self, grid):
         next_grid = grid.copy()
@@ -19,18 +67,6 @@ class Game2048:
 
             next_grid[position_2d] = value_choice
         return next_grid
-
-    def move(self, direction, verbose=False):
-        """
-        0 = left
-        1 = up
-        2 = right
-        3 = down
-        """
-        self.grid, moved = self._move(self.grid, direction)
-        if verbose and self._game_lost(self.grid):
-            print("Game Over!")
-        return moved
 
     def is_movable(self, direction):
         _, moved = self._move(self.grid, direction)
@@ -96,31 +132,32 @@ if __name__ == '__main__':
 
     # Focus must be on tkinter gui to activate commands
     main = Tk()
-    game = Game2048()
+    game = Env2048()
     print(game)
     verbose = True
 
+
     def leftKey(event):
         print()
-        game.move(0, verbose)
+        game.step(0)
         print(game)
 
 
     def upKey(event):
         print()
-        game.move(1, verbose)
+        game.step(1)
         print(game)
 
 
     def rightKey(event):
         print()
-        game.move(2, verbose)
+        game.step(2)
         print(game)
 
 
     def downKey(event):
         print()
-        game.move(3, verbose)
+        game.step(3)
         print(game)
 
 
