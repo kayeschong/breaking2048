@@ -1,10 +1,10 @@
-from tkinter import Frame, Label, CENTER
+from tkinter import Frame, Label, CENTER, OptionMenu, StringVar, Button
 from random import randint
 import time
 
 from games import Env2048
 from expectimax import ExpectiMax
-from controls_gui import Controls
+# from controls_gui import Controls
 
 SIZE = 500
 GRID_LEN = 4
@@ -24,10 +24,15 @@ class GameGrid(Frame):
     def __init__(self, root, algo):
         Frame.__init__(self, root)
 
-        self.grid()
+        # self.grid()
         self.master.title('2048')
         self.grid_cells = []
+        self.current_agent = StringVar(root)
+        self.score = StringVar(root)
+        self.direction = StringVar(root)
+        self.choices = {'Expectimax','RL','Monte Carlo'}
 
+        self.init_controls(root)
         self.init_grid(root)
         self.board = Env2048()
         self.update_grid_cells()
@@ -38,19 +43,19 @@ class GameGrid(Frame):
 
     def run_game(self):
         while True:
-            self.board.render()
-            print("move:", self.algo.get_move(self.board))
-
-            self.board.step(self.algo.get_move(self.board))
+            # self.board.render()
+            # print("move", self.algo.get_move(self.board))
+            move_direction = self.algo.get_move(self.board)
+            self.direction.set(move_direction)
+            self.board.step(move_direction)
             self.update_grid_cells()
             self.board.generate_tile(self.grid)
             
-            print("add new tile")
-            self.board.render()
-            print("\n") 
+            # print("add new tile")
+            # self.board.render()
+            # print("\n") 
 
             self.update_grid_cells()
-            
 
             if len(self.board.get_valid_moves()) == 0:
                 self.game_over_display()
@@ -72,9 +77,31 @@ class GameGrid(Frame):
         self.grid_cells[2][3].configure(text=str(top_4[3]), bg=BACKGROUND_COLOR_DICT[2048], fg=CELL_COLOR_DICT[2048])
         self.update()
 
+    def init_controls(self, root):
+        background = Frame(root, width=SIZE, height=SIZE)
+        background.grid(column=2, row=1, sticky='NSEW', padx=30, pady=30)
+
+        Label(background, text="Choose an agent").grid(row = 1)
+
+        self.current_agent.set('Expectimax') # default option
+        agent_menu = OptionMenu(background, self.current_agent, *self.choices)
+        agent_menu.grid(row = 2)
+        # link function to change dropdown
+        self.current_agent.trace('w', self.change_dropdown)
+         
+        Button(background, text="Start", width=6).grid(row = 3)
+
+        Label(background, text="Current score:").grid(row = 4, column=0, pady=(50,0), sticky='W')
+        self.score.set(2048)
+        Label(background, textvariable=self.score).grid(row = 4, column=1, pady=(50,0))
+
+        Label(background, text="Move:").grid(row = 5, column=0, sticky='W')
+        self.direction.set("None")
+        Label(background, textvariable=self.direction).grid(row = 5, column=1,)
+    
     def init_grid(self, root):
-        background = Frame(self, bg=BACKGROUND_COLOR_GAME, width=SIZE, height=SIZE)
-        background.grid()
+        background = Frame(root, bg=BACKGROUND_COLOR_GAME, width=SIZE, height=SIZE)
+        background.grid(column=1, row=1)
 
         for i in range(GRID_LEN):
             grid_row = []
@@ -90,8 +117,8 @@ class GameGrid(Frame):
 
             self.grid_cells.append(grid_row)
 
-        controls = Controls(root)
-        controls.grid(columnspan=GRID_LEN, rowspan=2)
+    def change_dropdown(self, *args):
+        print( self.current_agent.get() )
 
     def gen(self):
         return randint(0, GRID_LEN - 1)
@@ -102,6 +129,7 @@ class GameGrid(Frame):
         # self.add_random_tile()
 
     def update_grid_cells(self):
+        self.score.set(self.board.get_highest_score())
         for i in range(GRID_LEN):
             for j in range(GRID_LEN):
                 new_number = int(self.board.grid[i][j])
