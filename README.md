@@ -8,3 +8,5 @@ conda env create -f environment.yml
 
 conda activate 2048
 ```
+### Development
+To change agent: go to `main.py` and edit the `agent` variable
