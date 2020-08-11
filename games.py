@@ -57,10 +57,30 @@ class Env2048(gym.Env):
         print(self.grid)
 
     def get_valid_moves(self):
+        '''
+        Output:
+            list[int]: Valid moves for current grid
+        '''
         return [move for move in range(4) if self.is_movable(move)]
+    
+    def get_empty_cells(self):
+        '''
+        Output:
+            list[tuples]: Positions of empty cells
+        '''
+        cells = []
+        for x in range(4):
+            for y in range(4):
+                if self.grid[x][y] == 0:
+                    cells.append((x,y))
+        return cells
 
     def generate_tile(self, grid):
-        next_grid = grid.copy()
+        '''
+        Output:
+            numpy array: New grid with randomly generated tile
+        '''
+        next_grid = np.copy(grid)
         if self._num_empty_tiles(next_grid) > 0:
             empty_positions = np.argwhere(next_grid.flatten() == 0).flatten()
             position_choice = np.random.choice(empty_positions)
@@ -71,7 +91,17 @@ class Env2048(gym.Env):
             next_grid[position_2d] = value_choice
         return next_grid
 
+    def insert_tile(self, position, value):
+        '''
+        insert tile into position in grid
+        '''
+        self.grid[position[0]][position[1]] = value
+
     def is_movable(self, direction):
+        '''
+        Output:
+            bool: If there is a valid move for current grid
+        '''
         _, moved = self._move(self.grid, direction)
         return moved
 
@@ -119,10 +149,17 @@ class Env2048(gym.Env):
         return joined_grid, joined
 
     def _num_empty_tiles(self, grid):
+        '''
+        Output:
+            int: Number of empty tiles on input grid
+        '''
         return (grid == 0).sum()
 
     def _game_lost(self, grid):
-        # When no more valid moves
+        '''
+        Output:
+            bool: If no more valid moves
+        '''
         lost = all([not self.is_movable(direction) for direction in range(4)])
         return lost
 
@@ -130,43 +167,43 @@ class Env2048(gym.Env):
         return np.array2string(self.grid)
 
 
-if __name__ == '__main__':
-    from tkinter import Tk, Frame
+# if __name__ == '__main__':
+#     from tkinter import Tk, Frame
 
-    # Focus must be on tkinter gui to activate commands
-    main = Tk()
-    game = Env2048()
-    print(game)
-    verbose = True
-
-
-    def leftKey(event):
-        print()
-        game.step(0)
-        print(game)
+#     # Focus must be on tkinter gui to activate commands
+#     main = Tk()
+#     game = Env2048()
+#     print(game)
+#     verbose = True
 
 
-    def upKey(event):
-        print()
-        game.step(1)
-        print(game)
+#     def leftKey(event):
+#         print()
+#         game.step(0)
+#         print(game)
 
 
-    def rightKey(event):
-        print()
-        game.step(2)
-        print(game)
+#     def upKey(event):
+#         print()
+#         game.step(1)
+#         print(game)
 
 
-    def downKey(event):
-        print()
-        game.step(3)
-        print(game)
+#     def rightKey(event):
+#         print()
+#         game.step(2)
+#         print(game)
 
 
-    # frame = Frame(main, width=200, height=200)
-    main.bind('<Left>', leftKey)
-    main.bind('<Right>', rightKey)
-    main.bind('<Up>', upKey)
-    main.bind('<Down>', downKey)
-    main.mainloop()
+#     def downKey(event):
+#         print()
+#         game.step(3)
+#         print(game)
+
+
+#     # frame = Frame(main, width=200, height=200)
+#     main.bind('<Left>', leftKey)
+#     main.bind('<Right>', rightKey)
+#     main.bind('<Up>', upKey)
+#     main.bind('<Down>', downKey)
+#     main.mainloop()
