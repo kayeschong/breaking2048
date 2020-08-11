@@ -2,7 +2,8 @@ import math
 import time
 import numpy as np
 
-UP, DOWN, LEFT, RIGHT = range(4)
+# UP, DOWN, LEFT, RIGHT = range(4)
+LEFT, UP, RIGHT, DOWN = range(4)
 
 class ExpectiMax():
 
@@ -39,12 +40,12 @@ class ExpectiMax():
         return (utility, empty_u, smooth_u, big_t_u)
 
     def maximize(self, board, depth = 0):
-        moves = board.get_available_moves()
+        moves = board.get_valid_moves()
         moves_boards = []
 
         for m in moves:
             m_board = board.clone()
-            m_board.move(m)
+            m_board.step(m)
             moves_boards.append((m, m_board))
 
         max_utility = (float('-inf'),0,0,0)
@@ -60,7 +61,7 @@ class ExpectiMax():
         return best_direction, max_utility
 
     def chance(self, board, depth = 0):
-        empty_cells = board.get_available_cells()
+        empty_cells = board.get_empty_cells()
         n_empty = len(empty_cells)
 
         #if n_empty >= 7 and depth >= 5:
