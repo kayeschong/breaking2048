@@ -1,6 +1,5 @@
 from tkinter import Tk, Button
 from game_gui import GameGrid
-from controls_gui import Controls
 from expectimax import ExpectiMax
 
 if __name__ == '__main__':
