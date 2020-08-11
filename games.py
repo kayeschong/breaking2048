@@ -20,6 +20,11 @@ class Env2048(gym.Env):
         self.observation_space = spaces.Box(0, 2 ** self.n_tiles, shape=(self.height, self.width), dtype=np.int)
 
         self.reset()
+    
+    def clone(self):
+        grid_copy = Env2048()
+        grid_copy.grid = np.copy(self.grid)
+        return grid_copy
 
     def step(self, action):
         # Execute one time step within the environment
@@ -151,7 +156,7 @@ class Env2048(gym.Env):
     def _num_empty_tiles(self, grid):
         '''
         Output:
-            int: Number of empty tiles on input grid
+            int: Number of empty tiles on group
         '''
         return (grid == 0).sum()
 
