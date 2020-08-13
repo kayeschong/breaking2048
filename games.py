@@ -39,7 +39,7 @@ class Env2048(gym.Env):
 
         obs = self.grid.copy()
         if moved:
-            reward = 100
+            reward = 1
         else:
             reward = -1
         done = self._game_lost(self.grid)
@@ -70,6 +70,13 @@ class Env2048(gym.Env):
             list[int]: Valid moves for current grid
         '''
         return [move for move in range(4) if self.is_movable(move)]
+    
+    def get_invalid_moves(self):
+        '''
+        Output:
+            list[int]: Valid moves for current grid
+        '''
+        return [move for move in range(4) if not self.is_movable(move)]
     
     def get_empty_cells(self):
         '''
