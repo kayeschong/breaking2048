@@ -30,6 +30,8 @@ class GameGrid(Frame):
         self.current_agent = StringVar(root)
         self.score = StringVar(root)
         self.direction = StringVar(root)
+        self.move_count_label = StringVar(root)
+        self.move_count = 0
         self.choices = {'Expectimax','RL','Monte Carlo'}
 
         self.init_controls(root)
@@ -48,8 +50,10 @@ class GameGrid(Frame):
             move_direction = self.algo.get_move(self.board)
             self.direction.set(move_direction)
             self.board.step(move_direction)
+            self.move_count += 1
+            self.direction.set(move_direction)
+            self.move_count_label.set(self.move_count)
             self.update_grid_cells()
-            self.board.generate_tile(self.grid)
             
             # print("add new tile")
             # self.board.render()
@@ -95,9 +99,13 @@ class GameGrid(Frame):
         self.score.set(2048)
         Label(background, textvariable=self.score).grid(row = 4, column=1, pady=(50,0))
 
-        Label(background, text="Move:").grid(row = 5, column=0, sticky='W')
+        Label(background, text="Move Count:").grid(row = 5, column=0, sticky='W')
+        self.move_count_label.set(self.move_count)
+        Label(background, textvariable=self.move_count_label).grid(row = 5, column=1,)
+
+        Label(background, text="Move Direction:").grid(row = 6, column=0, sticky='W')
         self.direction.set("None")
-        Label(background, textvariable=self.direction).grid(row = 5, column=1,)
+        Label(background, textvariable=self.direction).grid(row = 6, column=1,)
     
     def init_grid(self, root):
         background = Frame(root, bg=BACKGROUND_COLOR_GAME, width=SIZE, height=SIZE)
@@ -129,7 +137,7 @@ class GameGrid(Frame):
         # self.add_random_tile()
 
     def update_grid_cells(self):
-        self.score.set(self.board.get_highest_score())
+        self.score.set(self.board.get_highest_tile())
         for i in range(GRID_LEN):
             for j in range(GRID_LEN):
                 new_number = int(self.board.grid[i][j])

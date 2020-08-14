@@ -61,7 +61,7 @@ class Env2048(gym.Env):
         # Render the environment to the screen
         print(self.grid)
 
-    def get_highest_score(self):
+    def get_highest_tile(self):
         return np.amax(self.grid)
     
     def get_valid_moves(self):
