@@ -1,3 +1,4 @@
+![alt text](GUI.png "2048 GUI")
 
 ## Setup instructions
 
