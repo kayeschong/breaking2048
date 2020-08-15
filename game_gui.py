@@ -20,10 +20,11 @@ CELL_COLOR_DICT = { 2:"#776e65", 4:"#776e65", 8:"#f9f6f2", 16:"#f9f6f2", \
                     32:"#f9f6f2", 64:"#f9f6f2", 128:"#f9f6f2", 256:"#f9f6f2", \
                     512:"#f9f6f2", 1024:"#f9f6f2", 2048:"#f9f6f2" }
 FONT = ("Verdana", 40, "bold")
-ACTION_MAP = {0:"left", 1:"up", 2:"right", 3:"down"}
+ACTION_MAP = {0:"left", 1:"up", 2:"right", 3:"down", 4:"None"}
+AGENT_DICT = {'Expectimax': ExpectiMax()}
 
 class GameGrid(Frame):
-    def __init__(self, root, algo):
+    def __init__(self, root):
         Frame.__init__(self, root)
 
         # self.grid()
@@ -40,7 +41,7 @@ class GameGrid(Frame):
         self.init_grid(root)
         self.board = Env2048()
         self.update_grid_cells()
-        self.algo = algo
+        self.algo = AGENT_DICT['Expectimax']
 
         self.game_active = False
         self.run_game()
@@ -53,6 +54,7 @@ class GameGrid(Frame):
             else:
                 move_direction = self.algo.get_move(self.board)
                 self.board.step(move_direction)
+                self.move_count += 1
                 self.update_results(move_direction)
                 self.update_grid_cells()
 
@@ -61,6 +63,18 @@ class GameGrid(Frame):
                     break
 
                 self.update()
+
+    def reset_grid(self, algo):
+        self.move_count = 0
+        self.update_results(4)
+
+        self.board = Env2048()
+        self.update_grid_cells()
+        self.algo = AGENT_DICT[algo]
+
+        self.game_active = False
+        self.button.config(text="Stop")
+        self.onStartStop()
         
     def game_over_display(self):
         for i in range(4):
@@ -122,7 +136,8 @@ class GameGrid(Frame):
             self.grid_cells.append(grid_row)
 
     def change_dropdown(self, *args):
-        print( self.current_agent.get() )
+        self.reset_grid(self.current_agent.get())
+        print( "dropdown:", self.current_agent.get() )
 
     def gen(self):
         return randint(0, GRID_LEN - 1)
@@ -151,7 +166,6 @@ class GameGrid(Frame):
 
     def update_results(self, move_direction):
         self.direction.set(ACTION_MAP[move_direction])
-        self.move_count += 1
         self.move_count_label.set(self.move_count)
         self.board.render()
         print("Move direction:", ACTION_MAP[move_direction])
