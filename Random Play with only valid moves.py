@@ -102,7 +102,7 @@ class Env2048(gym.Env):
             position_choice = np.random.choice(empty_positions)
             position_2d = np.unravel_index(position_choice, next_grid.shape)
 
-            value_choice = np.random.choice([2, 4], p=[0.8, 0.2])
+            value_choice = np.random.choice([2, 4], p=[0.9, 0.1])
 
             next_grid[position_2d] = value_choice
         return next_grid
