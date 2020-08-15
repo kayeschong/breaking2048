@@ -41,7 +41,7 @@ class Env2048(gym.Env):
         if moved:
             reward = 1
         else:
-            reward = -1
+            reward = 0 # Maybe 0
         done = self._game_lost(self.grid)
         info = {
             "has_moved": moved,
