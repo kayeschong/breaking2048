@@ -18,8 +18,8 @@ class Env2048(gym.Env):
 
         #self.action_space = spaces.Discrete(4)
         self.action_space = np.array([0,1,2,3])
+        self.action_map = {0:"left", 1:"up", 2:"right", 3:"down"}
         self.observation_space = spaces.Box(0, 2 ** self.n_tiles, shape=(self.height, self.width), dtype=np.int)
-
         self.reset()
     
     def clone(self):
@@ -183,26 +183,39 @@ class Env2048(gym.Env):
         return np.array2string(self.grid)
     
     def get_random_valid_move(self):
-        return np.random.choice(self.get_valid_moves())
-    
-    
+        return np.random.choice(self.get_valid_moves())  
 
-action_map = {0:"left", 1:"up", 2:"right", 3:"down"}
-env = Env2048()
-observation = env.reset()
-done = False
-i = 0
+    def random_play_simulation_run(self):
+        test_env = self.clone()
+        done = False
+        no_moves = 0
+        
+        while not done:
+            try:
+                action = test_env.get_random_valid_move()
+                observation, reward, done, info = test_env.step(action)
+                no_moves += 1
+            
+            except:
+                done = True
+                
+            if done:
+                break
+            
+        return no_moves, test_env.get_highest_tile()
+ 
+no_moves = []
+scores = []
 
-while not done:
-    print("Time Step: {}".format(i))
-    env.render()
-    print(env.get_valid_moves())
-    action = env.get_random_valid_move()
-    print(action_map[action])
-    observation, reward, done, info = env.step(action)
-    i += 1
-    if done:
-        print(env.get_highest_tile())
-        break   
-env.close()
+for run in range(100):
+    env = Env2048()
+    env.reset()
+    last_move_no, score = env.random_play_simulation_run()
+    no_moves.append(last_move_no)
+    scores.append(score)
+    env.close()
+
+print("Moves lasted by playing randomly: {}".format(np.mean(np.array(no_moves))))  
+print("Avg score by playing randomly: {}".format(np.mean(np.array(scores))))
+
 
