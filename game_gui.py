@@ -46,7 +46,7 @@ class GameGrid(Frame):
         self.mainloop()
 
     def run_game(self):
-        while self.start:
+        while True:
             # self.board.render()
             # print("move", self.algo.get_move(self.board))
             move_direction = self.algo.get_move(self.board)
