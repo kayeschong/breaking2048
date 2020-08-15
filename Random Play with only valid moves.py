@@ -215,7 +215,7 @@ for run in range(100):
     scores.append(score)
     env.close()
 
-print("Moves lasted by playing randomly: {}".format(np.mean(np.array(no_moves))))  
+print("Average moves lasted by playing randomly: {}".format(np.mean(np.array(no_moves))))  
 print("Avg score by playing randomly: {}".format(np.mean(np.array(scores))))
 
 
