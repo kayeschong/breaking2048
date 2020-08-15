@@ -5,7 +5,6 @@ import time
 import random
 import gym
 import numpy as np
-import matplotlib.pyplot as plt
 from collections import namedtuple, deque
 
 import torch
@@ -74,7 +73,7 @@ class DQNAgent():
 
         self.model = DQCNN(4, 4, 4).to(self.device)
         if os.path.exists(self.model_path):        
-            self.model.load_state_dict(torch.load(self.model_path))
+            self.model.load_state_dict(torch.load(self.model_path, map_location=self.device))
             self.model.eval()
         else:
             if train:
@@ -105,11 +104,11 @@ class DQNAgent():
         target_net.eval()
         optimizer = optim.Adam(params=policy_net.parameters(), lr=LEARNING_RATE)
         
-        NUM_EPISODES = 500
+        NUM_EPISODES = 20
         possible_values = [0] + [2**i for i in range(1, 13)]
 
         for episode in range(NUM_EPISODES):
-            # print("episode:", episode)
+            print("episode:", episode)
             env.reset()
             done = False
             obs = env.grid.copy()
@@ -165,7 +164,7 @@ class DQNAgent():
                 target_net.load_state_dict(policy_net.state_dict())
 
         torch.save(policy_net.state_dict(), self.model_path)
-        self.model.load_state_dict(torch.load(self.model_path))
+        self.model.load_state_dict(torch.load(self.model_path, map_location=self.device))
         self.model.eval()
 
     def unpack_batch(self, experiences):
