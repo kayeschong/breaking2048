@@ -19,6 +19,7 @@ CELL_COLOR_DICT = { 2:"#776e65", 4:"#776e65", 8:"#f9f6f2", 16:"#f9f6f2", \
                     32:"#f9f6f2", 64:"#f9f6f2", 128:"#f9f6f2", 256:"#f9f6f2", \
                     512:"#f9f6f2", 1024:"#f9f6f2", 2048:"#f9f6f2" }
 FONT = ("Verdana", 40, "bold")
+ACTION_MAP = {0:"left", 1:"up", 2:"right", 3:"down"}
 
 class GameGrid(Frame):
     def __init__(self, root, algo):
@@ -40,19 +41,17 @@ class GameGrid(Frame):
         self.update_grid_cells()
         self.algo = algo
 
+        self.start = False
         self.run_game()
         self.mainloop()
 
     def run_game(self):
-        while True:
+        while self.start:
             # self.board.render()
             # print("move", self.algo.get_move(self.board))
             move_direction = self.algo.get_move(self.board)
-            self.direction.set(move_direction)
             self.board.step(move_direction)
-            self.move_count += 1
-            self.direction.set(move_direction)
-            self.move_count_label.set(self.move_count)
+            self.update_results(move_direction)
             self.update_grid_cells()
             
             # print("add new tile")
@@ -83,7 +82,7 @@ class GameGrid(Frame):
 
     def init_controls(self, root):
         background = Frame(root, width=SIZE, height=SIZE)
-        background.grid(column=2, row=1, sticky='NSEW', padx=30, pady=30)
+        background.grid(column=2, row=1, sticky='NSEW', padx=50, pady=50)
 
         Label(background, text="Choose an agent").grid(row = 1)
 
@@ -93,7 +92,7 @@ class GameGrid(Frame):
         # link function to change dropdown
         self.current_agent.trace('w', self.change_dropdown)
          
-        Button(background, text="Start", width=6).grid(row = 3)
+        Button(background, text="Start", width=6, command=self.onStart).grid(row = 3)
 
         Label(background, text="Current score:").grid(row = 4, column=0, pady=(50,0), sticky='W')
         self.score.set(2048)
@@ -152,3 +151,16 @@ class GameGrid(Frame):
 
                     self.grid_cells[i][j].configure(text=str(n), bg=BACKGROUND_COLOR_DICT[c], fg=CELL_COLOR_DICT[c])
         self.update_idletasks()
+
+    def update_results(self, move_direction):
+        self.direction.set(ACTION_MAP[move_direction])
+        self.move_count += 1
+        self.move_count_label.set(self.move_count)
+
+    def onStart(self):
+        self.start = True
+
+    def onStop(self):
+        self.start = False
+        # TODO: reset game
+        
