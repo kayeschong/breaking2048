@@ -15,7 +15,7 @@ In terminal:
 2. python3 main.py
 ```
 
-## Interacting with the GUI
+### Interacting with the GUI
 1. Select `START` to start simulation with the selected agent/model.
 2. Use the dropdown menu to select another agent/model.
 3. Upon a new selection, the game grid will reset.
