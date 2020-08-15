@@ -200,6 +200,8 @@ class Env2048(gym.Env):
                 done = True
                 
             if done:
+                test_env.render()
+                print("\n")
                 break
             
         return no_moves, test_env.get_highest_tile()
@@ -207,7 +209,7 @@ class Env2048(gym.Env):
 no_moves = []
 scores = []
 
-for run in range(100):
+for run in range(10):
     env = Env2048()
     env.reset()
     last_move_no, score = env.random_play_simulation_run()
@@ -215,6 +217,8 @@ for run in range(100):
     scores.append(score)
     env.close()
 
+print(no_moves)
+print(scores)
 print("Average moves lasted by playing randomly: {}".format(np.mean(np.array(no_moves))))  
 print("Avg score by playing randomly: {}".format(np.mean(np.array(scores))))
 
