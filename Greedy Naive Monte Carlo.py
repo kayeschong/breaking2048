@@ -1,5 +1,6 @@
 import numpy as np
 import gym
+from multiprocessing import Pool
 from gym import spaces
 
 
@@ -204,20 +205,18 @@ env.reset()
 done = False
 i = 0
 
+# Set no of subprocesses
+p = Pool(4)
+
 while not done:
     print("Time Step: {}".format(i))
     env.render()
     print(env.get_valid_moves())
-    
-    move_value = np.zeros(4)
 
-    for move in env.get_valid_moves():
-        test_env = env.clone()
-        observation, reward, done, info = test_env.step(move)
-        for run in range(1,51):
-            move_value[move] += (test_env.random_play_simulation_run() - move_value[move])/run
-    
-    action = np.argmax(move_value)
+    move_value = dict(p.map(play_game_till_end, env.get_valid_moves()))
+    print(move_value)
+
+    action = max(move_value, key=move_value.get)
     print(env.action_map[action])
     observation, reward, done, info = env.step(action)
     i += 1
@@ -236,23 +235,21 @@ done = False
 i = 0
 eps = 0.1
 
+# Set no of subprocesses
+p = Pool(4)
+
 while not done:
     print("Time Step: {}".format(i))
     env.render()
     print(env.get_valid_moves())
-    
-    move_value = np.zeros(4)
 
-    for move in env.get_valid_moves():
-        test_env = env.clone()
-        observation, reward, done, info = test_env.step(move)
-        for run in range(1,51):
-            move_value[move] += (test_env.random_play_simulation_run() - move_value[move])/run
+    move_value = dict(p.map(play_game_till_end, env.get_valid_moves()))
+    print(move_value)
 
     if np.random.uniform() < 0.1:
       action = env.get_random_valid_move()
     else:
-      action = np.argmax(move_value)
+      action = max(move_value, key=move_value.get)
 
     print(env.action_map[action])
     observation, reward, done, info = env.step(action)
@@ -262,7 +259,6 @@ while not done:
         break  
     
 env.close()
-
 
 
 
