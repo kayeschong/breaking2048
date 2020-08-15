@@ -5,6 +5,7 @@ import threading
 
 from games import Env2048
 from expectimax import ExpectiMax
+from random_play import RandomPlay
 # from controls_gui import Controls
 
 SIZE = 500
@@ -20,8 +21,8 @@ CELL_COLOR_DICT = { 2:"#776e65", 4:"#776e65", 8:"#f9f6f2", 16:"#f9f6f2", \
                     32:"#f9f6f2", 64:"#f9f6f2", 128:"#f9f6f2", 256:"#f9f6f2", \
                     512:"#f9f6f2", 1024:"#f9f6f2", 2048:"#f9f6f2" }
 FONT = ("Verdana", 40, "bold")
-ACTION_MAP = {0:"left", 1:"up", 2:"right", 3:"down", 4:"None"}
-AGENT_DICT = {'Expectimax': ExpectiMax()}
+ACTION_MAP = {0: "Left", 1: "Up", 2: "Right", 3: "Down", 4:"None"}
+AGENT_DICT = {'Expectimax': ExpectiMax(), 'Random Play': RandomPlay()}
 
 class GameGrid(Frame):
     def __init__(self, root):
@@ -35,24 +36,28 @@ class GameGrid(Frame):
         self.direction = StringVar(root)
         self.move_count_label = StringVar(root)
         self.move_count = 0
-        self.choices = {'Expectimax','RL','Monte Carlo'}
+        self.choices = {'Random Play','Expectimax','Monte Carlo'}
 
         self.init_controls(root)
         self.init_grid(root)
         self.board = Env2048()
         self.update_grid_cells()
-        self.algo = AGENT_DICT['Expectimax']
+        self.agent = AGENT_DICT['Expectimax']
 
         self.game_active = False
         self.run_game()
         self.mainloop()
 
+
     def run_game(self):
+        '''
+        recursively move tiles and generate new tiles while updating scores
+        '''
         while True:
             if not self.game_active:
                 break
             else:
-                move_direction = self.algo.get_move(self.board)
+                move_direction = self.agent.get_move(self.board)
                 self.board.step(move_direction)
                 self.move_count += 1
                 self.update_results(move_direction)
@@ -64,19 +69,29 @@ class GameGrid(Frame):
 
                 self.update()
 
-    def reset_grid(self, algo):
+
+    def reset_grid(self, agent):
+        '''
+        reset game when there is a change in agent
+        '''
         self.move_count = 0
         self.update_results(4)
 
+        # init new game env with selected agent
         self.board = Env2048()
         self.update_grid_cells()
-        self.algo = AGENT_DICT[algo]
+        self.agent = AGENT_DICT[agent]
 
+        # reset current game
         self.game_active = False
         self.button.config(text="Stop")
         self.onStartStop()
         
+
     def game_over_display(self):
+        '''
+        GUI display when game is over
+        '''
         for i in range(4):
             for j in range(4):
                 self.grid_cells[i][j].configure(text="", bg=BACKGROUND_COLOR_CELL_EMPTY)
@@ -90,7 +105,11 @@ class GameGrid(Frame):
         self.grid_cells[2][3].configure(text=str(top_4[3]), bg=BACKGROUND_COLOR_DICT[2048], fg=CELL_COLOR_DICT[2048])
         self.update()
 
+
     def init_controls(self, root):
+        '''
+        initialise controls and results GUI panel
+        '''
         background = Frame(root, width=SIZE, height=SIZE)
         background.grid(column=2, row=1, sticky='NSEW', padx=50, pady=50)
 
@@ -117,7 +136,11 @@ class GameGrid(Frame):
         self.direction.set("None")
         Label(background, textvariable=self.direction).grid(row = 6, column=1,)
     
+
     def init_grid(self, root):
+        '''
+        initialise game GUI grid
+        '''
         background = Frame(root, bg=BACKGROUND_COLOR_GAME, width=SIZE, height=SIZE)
         background.grid(column=1, row=1)
 
@@ -135,19 +158,23 @@ class GameGrid(Frame):
 
             self.grid_cells.append(grid_row)
 
+
     def change_dropdown(self, *args):
+        '''
+        detects change in agent selection
+        '''
         self.reset_grid(self.current_agent.get())
         print( "dropdown:", self.current_agent.get() )
+
 
     def gen(self):
         return randint(0, GRID_LEN - 1)
 
-    # def init_matrix(self):
-    #     self.board = Env2048()
-        # self.add_random_tile()
-        # self.add_random_tile()
 
     def update_grid_cells(self):
+        '''
+        update grid GUI based on board.grid
+        '''
         self.score.set(self.board.get_highest_tile())
         for i in range(GRID_LEN):
             for j in range(GRID_LEN):
@@ -164,14 +191,22 @@ class GameGrid(Frame):
                     self.grid_cells[i][j].configure(text=str(n), bg=BACKGROUND_COLOR_DICT[c], fg=CELL_COLOR_DICT[c])
         self.update_idletasks()
 
+
     def update_results(self, move_direction):
+        '''
+        update results GUI panel
+        '''
         self.direction.set(ACTION_MAP[move_direction])
         self.move_count_label.set(self.move_count)
-        self.board.render()
-        print("Move direction:", ACTION_MAP[move_direction])
-        print("Move count:", self.move_count)
+        # self.board.render()
+        # print("Move direction:", ACTION_MAP[move_direction])
+        # print("Move count:", self.move_count)
+
 
     def onStartStop(self):
+        '''
+        detect change in START/STOP button
+        '''
         if self.button['text'] == 'Start':
             self.game_active = True
             self.button.config(text="Stop")
