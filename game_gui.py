@@ -1,4 +1,4 @@
-from tkinter import Frame, Label, CENTER, OptionMenu, StringVar, Button
+from tkinter import Frame, Label, CENTER, OptionMenu, StringVar, Button, Message
 from random import randint
 import time
 import threading
@@ -7,6 +7,7 @@ from games import Env2048
 from expectimax import ExpectiMax
 from random_play import RandomPlay
 from montecarlo_moves import MonteCarloGreedyMoves
+from montecarlo_score import MonteCarloGreedyScore
 # from controls_gui import Controls
 
 SIZE = 500
@@ -26,7 +27,9 @@ ACTION_MAP = {0: "Left", 1: "Up", 2: "Right", 3: "Down", 4:"None"}
 AGENT_DICT = {'Expectimax': ExpectiMax(), 
             'Random Play': RandomPlay(), 
             'MC - Greedy Moves': MonteCarloGreedyMoves(False),
-            'MC - e-Greedy Moves': MonteCarloGreedyMoves(True)}
+            'MC - e-Greedy Moves': MonteCarloGreedyMoves(True),
+            'MC - Greedy Score': MonteCarloGreedyScore(False),
+            'MC - e-Greedy Score': MonteCarloGreedyScore(True)}
 
 class GameGrid(Frame):
     def __init__(self, root):
@@ -40,7 +43,7 @@ class GameGrid(Frame):
         self.direction = StringVar(root)
         self.move_count_label = StringVar(root)
         self.move_count = 0
-        self.choices = {'Random Play','Expectimax','MC - Greedy Moves', 'MC - e-Greedy Moves'}
+        self.choices = {'Random Play','Expectimax','MC - Greedy Moves', 'MC - e-Greedy Moves', 'MC - Greedy Score', 'MC - e-Greedy Score'}
 
         self.init_controls(root)
         self.init_grid(root)
@@ -140,6 +143,9 @@ class GameGrid(Frame):
         Label(background, text="Move Direction:").grid(row = 6, column=0, sticky='W')
         self.direction.set("None")
         Label(background, textvariable=self.direction).grid(row = 6, column=1,)
+
+        Label(background, text="NOTE:", fg="red").grid(row = 7, column=0, sticky='W', pady=(50,0))
+        Message(background, width=200,text="MC = Monte Carlo\ne-Greedy = epsilon Greedy").grid(row = 8, column=0, sticky='W')
     
 
     def init_grid(self, root):
@@ -156,7 +162,6 @@ class GameGrid(Frame):
 
                 cell = Frame(background, bg=BACKGROUND_COLOR_CELL_EMPTY, width=SIZE/GRID_LEN, height=SIZE/GRID_LEN)
                 cell.grid(row=i, column=j, padx=GRID_PADDING, pady=GRID_PADDING)
-                # font = Font(size=FONT_SIZE, family=FONT_FAMILY, weight=FONT_WEIGHT)
                 t = Label(master=cell, text="", bg=BACKGROUND_COLOR_CELL_EMPTY, justify=CENTER, font=FONT, width=4, height=2)
                 t.grid()
                 grid_row.append(t)
