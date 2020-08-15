@@ -7,7 +7,7 @@
 ```bash
 conda env create -f environment.yml
 
-conda activate 2048
+conda activate game2048
 ```
 ### Run the GUI
 ```

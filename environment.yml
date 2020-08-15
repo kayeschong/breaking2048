@@ -1,12 +1,16 @@
-name: 2048
+name: game2048
 channels:
+  - pytorch
   - conda-forge
   - defaults
 dependencies:
   - python=3.8
   - numpy
+  - matplotlib
   - jupyterlab
+  - pytorch
+  - torchvision
+  - cudatoolkit=10.2
   - pip
   - pip:
       - gym
-      - stable-baselines3
