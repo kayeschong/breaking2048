@@ -6,6 +6,7 @@ import threading
 from games import Env2048
 from expectimax import ExpectiMax
 from random_play import RandomPlay
+from montecarlo_moves import MonteCarloGreedyMoves
 # from controls_gui import Controls
 
 SIZE = 500
@@ -22,7 +23,10 @@ CELL_COLOR_DICT = { 2:"#776e65", 4:"#776e65", 8:"#f9f6f2", 16:"#f9f6f2", \
                     512:"#f9f6f2", 1024:"#f9f6f2", 2048:"#f9f6f2" }
 FONT = ("Verdana", 40, "bold")
 ACTION_MAP = {0: "Left", 1: "Up", 2: "Right", 3: "Down", 4:"None"}
-AGENT_DICT = {'Expectimax': ExpectiMax(), 'Random Play': RandomPlay()}
+AGENT_DICT = {'Expectimax': ExpectiMax(), 
+            'Random Play': RandomPlay(), 
+            'MC - Greedy Moves': MonteCarloGreedyMoves(False),
+            'MC - e-Greedy Moves': MonteCarloGreedyMoves(True)}
 
 class GameGrid(Frame):
     def __init__(self, root):
@@ -36,7 +40,7 @@ class GameGrid(Frame):
         self.direction = StringVar(root)
         self.move_count_label = StringVar(root)
         self.move_count = 0
-        self.choices = {'Random Play','Expectimax','Monte Carlo'}
+        self.choices = {'Random Play','Expectimax','MC - Greedy Moves', 'MC - e-Greedy Moves'}
 
         self.init_controls(root)
         self.init_grid(root)
@@ -58,6 +62,7 @@ class GameGrid(Frame):
                 break
             else:
                 move_direction = self.agent.get_move(self.board)
+                print("move direction", move_direction)
                 self.board.step(move_direction)
                 self.move_count += 1
                 self.update_results(move_direction)
@@ -175,6 +180,7 @@ class GameGrid(Frame):
         '''
         update grid GUI based on board.grid
         '''
+        print("update grid cells")
         self.score.set(self.board.get_highest_tile())
         for i in range(GRID_LEN):
             for j in range(GRID_LEN):

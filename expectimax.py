@@ -34,7 +34,7 @@ class ExpectiMax():
         smooth_u = smoothness ** smoothness_w
         big_t_u = big_total
 
-        # calculating utility score
+        # compute utility score
         utility += big_total
         utility += empty_u
         utility += smooth_u
