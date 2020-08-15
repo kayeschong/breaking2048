@@ -64,13 +64,16 @@ class GameGrid(Frame):
             if not self.game_active:
                 break
             else:
+                # get best move based on agent
                 move_direction = self.agent.get_move(self.board)
-                print("move direction", move_direction)
                 self.board.step(move_direction)
+
+                # update game board and GUI
                 self.move_count += 1
                 self.update_results(move_direction)
                 self.update_grid_cells()
 
+                # check if game is over
                 if len(self.board.get_valid_moves()) == 0:
                     self.game_over_display()
                     break
