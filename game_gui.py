@@ -1,6 +1,7 @@
 from tkinter import Frame, Label, CENTER, OptionMenu, StringVar, Button
 from random import randint
 import time
+import threading
 
 from games import Env2048
 from expectimax import ExpectiMax
@@ -41,30 +42,25 @@ class GameGrid(Frame):
         self.update_grid_cells()
         self.algo = algo
 
-        self.start = False
+        self.game_active = False
         self.run_game()
         self.mainloop()
 
     def run_game(self):
         while True:
-            # self.board.render()
-            # print("move", self.algo.get_move(self.board))
-            move_direction = self.algo.get_move(self.board)
-            self.board.step(move_direction)
-            self.update_results(move_direction)
-            self.update_grid_cells()
-            
-            # print("add new tile")
-            # self.board.render()
-            # print("\n") 
-
-            self.update_grid_cells()
-
-            if len(self.board.get_valid_moves()) == 0:
-                self.game_over_display()
+            if not self.game_active:
                 break
+            else:
+                move_direction = self.algo.get_move(self.board)
+                self.board.step(move_direction)
+                self.update_results(move_direction)
+                self.update_grid_cells()
 
-            self.update()
+                if len(self.board.get_valid_moves()) == 0:
+                    self.game_over_display()
+                    break
+
+                self.update()
         
     def game_over_display(self):
         for i in range(4):
@@ -92,7 +88,8 @@ class GameGrid(Frame):
         # link function to change dropdown
         self.current_agent.trace('w', self.change_dropdown)
          
-        Button(background, text="Start", width=6, command=self.onStart).grid(row = 3)
+        self.button = Button(background, text="Start", width=6, command=self.onStartStop)
+        self.button.grid(row = 3)
 
         Label(background, text="Current score:").grid(row = 4, column=0, pady=(50,0), sticky='W')
         self.score.set(2048)
@@ -156,11 +153,20 @@ class GameGrid(Frame):
         self.direction.set(ACTION_MAP[move_direction])
         self.move_count += 1
         self.move_count_label.set(self.move_count)
+        self.board.render()
+        print("Move direction:", ACTION_MAP[move_direction])
+        print("Move count:", self.move_count)
 
-    def onStart(self):
-        self.start = True
-
-    def onStop(self):
-        self.start = False
-        # TODO: reset game
+    def onStartStop(self):
+        if self.button['text'] == 'Start':
+            self.game_active = True
+            self.button.config(text="Stop")
+            t1 = threading.Thread(target = self.run_game) 
+            t1.start()
+            
+        else:
+            self.game_active = False
+            self.button.config(text="Start")
+            t1.join()
+        
         
