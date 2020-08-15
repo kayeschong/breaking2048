@@ -79,8 +79,8 @@ class ExpectiMax():
 
         possible_tiles = []
 
-        chance_2 = (.8 * (1 / n_empty))
-        chance_4 = (.2 * (1 / n_empty))
+        chance_2 = (.9 * (1 / n_empty))
+        chance_4 = (.1 * (1 / n_empty))
         
         for empty_cell in empty_cells:
             possible_tiles.append((empty_cell, 2, chance_2))
