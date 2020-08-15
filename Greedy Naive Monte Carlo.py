@@ -195,9 +195,11 @@ class Env2048(gym.Env):
                 break
         return test_env.get_highest_tile()
 
+
+# Greedy Algorithm
+
 env = Env2048()
 env.reset()
-env.render()
 
 done = False
 i = 0
@@ -212,7 +214,7 @@ while not done:
     for move in env.get_valid_moves():
         test_env = env.clone()
         observation, reward, done, info = test_env.step(move)
-        for run in range(1,11):
+        for run in range(1,51):
             move_value[move] += (test_env.random_play_simulation_run() - move_value[move])/run
     
     action = np.argmax(move_value)
@@ -225,6 +227,41 @@ while not done:
     
 env.close()
 
+# Epsilon Greedy Algorithm
+
+env = Env2048()
+env.reset()
+
+done = False
+i = 0
+eps = 0.1
+
+while not done:
+    print("Time Step: {}".format(i))
+    env.render()
+    print(env.get_valid_moves())
+    
+    move_value = np.zeros(4)
+
+    for move in env.get_valid_moves():
+        test_env = env.clone()
+        observation, reward, done, info = test_env.step(move)
+        for run in range(1,51):
+            move_value[move] += (test_env.random_play_simulation_run() - move_value[move])/run
+
+    if np.random.uniform() < 0.1:
+      action = env.get_random_valid_move()
+    else:
+      action = np.argmax(move_value)
+
+    print(env.action_map[action])
+    observation, reward, done, info = env.step(action)
+    i += 1
+    if done:
+        print(env.get_highest_tile())
+        break  
+    
+env.close()
 
 
 
