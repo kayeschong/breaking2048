@@ -8,6 +8,7 @@ from expectimax import ExpectiMax
 from random_play import RandomPlay
 from montecarlo_moves import MonteCarloGreedyMoves
 from montecarlo_score import MonteCarloGreedyScore
+from dqn import DQNAgent
 # from controls_gui import Controls
 
 SIZE = 500
@@ -29,7 +30,8 @@ AGENT_DICT = {'Expectimax': ExpectiMax(),
             'MC - Greedy Moves': MonteCarloGreedyMoves(False),
             'MC - e-Greedy Moves': MonteCarloGreedyMoves(True),
             'MC - Greedy Score': MonteCarloGreedyScore(False),
-            'MC - e-Greedy Score': MonteCarloGreedyScore(True)}
+            'MC - e-Greedy Score': MonteCarloGreedyScore(True),
+            'DQN': DQNAgent()}
 
 class GameGrid(Frame):
     def __init__(self, root):
@@ -43,7 +45,7 @@ class GameGrid(Frame):
         self.direction = StringVar(root)
         self.move_count_label = StringVar(root)
         self.move_count = 0
-        self.choices = {'Random Play','Expectimax','MC - Greedy Moves', 'MC - e-Greedy Moves', 'MC - Greedy Score', 'MC - e-Greedy Score'}
+        self.choices = {'Random Play','Expectimax','MC - Greedy Moves', 'MC - e-Greedy Moves', 'MC - Greedy Score', 'MC - e-Greedy Score', 'DQN'}
 
         self.init_controls(root)
         self.init_grid(root)
