@@ -41,7 +41,7 @@ class Env2048(gym.Env):
         if moved:
             reward = 1
         else:
-            reward = -1
+            reward = 0 # Maybe 0
         done = self._game_lost(self.grid)
         info = {
             "has_moved": moved,
@@ -74,7 +74,7 @@ class Env2048(gym.Env):
     def get_invalid_moves(self):
         '''
         Output:
-            list[int]: Valid moves for current grid
+            list[int]: Invalid moves for current grid
         '''
         return [move for move in range(4) if not self.is_movable(move)]
     

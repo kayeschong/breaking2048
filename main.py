@@ -4,9 +4,9 @@ from expectimax import ExpectiMax
 
 if __name__ == '__main__':
     window = Tk()
-    agent = ExpectiMax()
+    # agent = ExpectiMax()
 
-    game_grid = GameGrid(window, agent)
+    game_grid = GameGrid(window)
     game_grid.pack()
 
     window.mainloop()

@@ -2,7 +2,6 @@ import math
 import time
 import numpy as np
 
-# UP, DOWN, LEFT, RIGHT = range(4)
 LEFT, UP, RIGHT, DOWN = range(4)
 
 class ExpectiMax():
@@ -17,7 +16,8 @@ class ExpectiMax():
         utility = 0
         smoothness = 0
 
-        big_t = np.sum(np.power(grid, 2))
+        big_total = np.sum(np.power(grid, 2))
+        # calculate smoothness of adjacent rows and columns
         s_grid = np.sqrt(grid)
         smoothness -= np.sum(np.abs(s_grid[::,0] - s_grid[::,1]))
         smoothness -= np.sum(np.abs(s_grid[::,1] - s_grid[::,2]))
@@ -26,14 +26,16 @@ class ExpectiMax():
         smoothness -= np.sum(np.abs(s_grid[1,::] - s_grid[2,::]))
         smoothness -= np.sum(np.abs(s_grid[2,::] - s_grid[3,::]))
         
+        # weights
         empty_w = 100000
         smoothness_w = 3
 
         empty_u = n_empty * empty_w
         smooth_u = smoothness ** smoothness_w
-        big_t_u = big_t
+        big_t_u = big_total
 
-        utility += big_t
+        # compute utility score
+        utility += big_total
         utility += empty_u
         utility += smooth_u
 
@@ -43,6 +45,7 @@ class ExpectiMax():
         moves = board.get_valid_moves()
         moves_boards = []
 
+        # get grid state for each possible move
         for m in moves:
             m_board = board.clone()
             m_board.step(m)
@@ -51,9 +54,11 @@ class ExpectiMax():
         max_utility = (float('-inf'),0,0,0)
         best_direction = None
 
+        # calculate utility of each possible state
         for mb in moves_boards:
             utility = self.chance(mb[1], depth + 1)
-
+            
+            # update utility
             if utility[0] >= max_utility[0]:
                 max_utility = utility
                 best_direction = mb[0]
@@ -82,17 +87,20 @@ class ExpectiMax():
         chance_2 = (.9 * (1 / n_empty))
         chance_4 = (.1 * (1 / n_empty))
         
+        # get possible generated tile and porobability
         for empty_cell in empty_cells:
             possible_tiles.append((empty_cell, 2, chance_2))
             possible_tiles.append((empty_cell, 4, chance_4))
 
         utility_sum = [0, 0, 0, 0]
 
+        # try out all possible outcomes
         for t in possible_tiles:
             t_board = board.clone()
             t_board.insert_tile(t[0], t[1])
             _, utility = self.maximize(t_board, depth + 1)
 
+            # sum (utility of each possible outcome * tile value)
             for i in range(4):
                 utility_sum[i] += utility[i] * t[2]
 
