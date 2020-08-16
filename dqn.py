@@ -104,7 +104,7 @@ class DQNAgent():
         target_net.eval()
         optimizer = optim.Adam(params=policy_net.parameters(), lr=LEARNING_RATE)
         
-        NUM_EPISODES = 20
+        NUM_EPISODES = 500
         possible_values = [0] + [2**i for i in range(1, 13)]
 
         for episode in range(NUM_EPISODES):

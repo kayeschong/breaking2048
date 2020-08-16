@@ -9,6 +9,17 @@ conda env create -f environment.yml
 
 conda activate game2048
 ```
+
+Alternatively, you can use
+
+```bash
+python -m venv env
+
+source env/bin/activate
+
+pip install -r requirements.txt
+```
+
 ### Run the GUI
 ```
 In terminal:
