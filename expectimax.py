@@ -12,7 +12,6 @@ class ExpectiMax():
 
     def eval_board(self, board, n_empty): 
         grid = board.grid
-
         utility = 0
         smoothness = 0
 
@@ -27,11 +26,11 @@ class ExpectiMax():
         smoothness -= np.sum(np.abs(s_grid[2,::] - s_grid[3,::]))
         
         # weights
-        empty_w = 100000
-        smoothness_w = 3
+        empty_weight = 100000
+        smoothness_weight = 3
 
-        empty_u = n_empty * empty_w
-        smooth_u = smoothness ** smoothness_w
+        empty_u = n_empty * empty_weight
+        smooth_u = smoothness ** smoothness_weight
         big_t_u = big_total
 
         # compute utility score
@@ -84,15 +83,15 @@ class ExpectiMax():
 
         possible_tiles = []
 
-        chance_2 = (.9 * (1 / n_empty))
-        chance_4 = (.1 * (1 / n_empty))
+        prob_2 = (.9 * (1 / n_empty))
+        prob_4 = (.1 * (1 / n_empty))
         
         # get possible generated tile and porobability
         for empty_cell in empty_cells:
-            possible_tiles.append((empty_cell, 2, chance_2))
-            possible_tiles.append((empty_cell, 4, chance_4))
+            possible_tiles.append((empty_cell, 2, prob_2))
+            possible_tiles.append((empty_cell, 4, prob_4))
 
-        utility_sum = [0, 0, 0, 0]
+        utility_total = [0, 0, 0, 0]
 
         # try out all possible outcomes
         for t in possible_tiles:
@@ -102,6 +101,6 @@ class ExpectiMax():
 
             # sum (utility of each possible outcome * tile value)
             for i in range(4):
-                utility_sum[i] += utility[i] * t[2]
+                utility_total[i] += utility[i] * t[2]
 
-        return tuple(utility_sum)
+        return tuple(utility_total)
